@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio San Juan Innova School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;Radio SJIS&quot;,
+        &quot;short_name&quot;: &quot;Radio SJIS&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#4c0519&quot;,
+        &quot;theme_color&quot;: &quot;#be123c&quot;,
+        &quot;description&quot;: &quot;La radio oficial de San Juan Innova School.&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;https://placehold.co/192x192/9f1239/white?text=SJIS&font=inter&quot;,
+            &quot;sizes&quot;: &quot;192x192&quot;,
+            &quot;type&quot;: &quot;image/png&quot;
+        },{
+            &quot;src&quot;: &quot;https://placehold.co/512x512/9f1239/white?text=SJIS&font=inter&quot;,
+            &quot;sizes&quot;: &quot;512x512&quot;,
+            &quot;type&quot;: &quot;image/png&quot;
+        }]
+    }">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px; outline: none;
+            transition: opacity .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px;
+            background: #f43f5e; /* rose-500 */
+            cursor: pointer; border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px; height: 20px;
+            background: #f43f5e; /* rose-500 */
+            cursor: pointer; border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        .sound-wave .bar {
+            display: block; width: 6px;
+            background-color: #fda4af; /* rose-300 */
+            border-radius: 3px;
+            transition: height 0.3s ease-in-out;
+        }
+        .sound-wave.playing .bar {
+            animation: wave 1.2s infinite ease-in-out alternate;
+            animation-delay: var(--d);
+        }
+        @keyframes wave {
+            from { transform: scaleY(0.2); }
+            to { transform: scaleY(1.0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-900 via-rose-800 to-black flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-sm mx-auto bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl p-6 flex flex-col space-y-4 text-white">
+        
+        <header class="text-center">
+            <h1 class="text-xl font-bold text-white">Radio San Juan Innova School</h1>
+            <p class="text-sm text-rose-200">La Voz de la Nueva Generación</p>
+        </header>
+
+        <div class="aspect-square rounded-xl flex items-center justify-center overflow-hidden">
+            <div id="sound-wave-container" class="sound-wave flex items-end justify-center h-24 space-x-1.5">
+                <span class="bar" style="height: 10%; --d: 0.1s;"></span>
+                <span class="bar" style="height: 30%; --d: 0.2s;"></span>
+                <span class="bar" style="height: 60%; --d: 0.0s;"></span>
+                <span class="bar" style="height: 45%; --d: 0.3s;"></span>
+                <span class="bar" style="height: 80%; --d: 0.1s;"></span>
+                <span class="bar" style="height: 55%; --d: 0.2s;"></span>
+                <span class="bar" style="height: 35%; --d: 0.0s;"></span>
+                <span class="bar" style="height: 70%; --d: 0.3s;"></span>
+                <span class="bar" style="height: 40%; --d: 0.1s;"></span>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <h2 id="status" class="text-lg font-semibold text-white transition-all duration-300">Presiona Play para escuchar</h2>
+            <p id="now-playing" class="text-rose-200">¡Sintonízanos!</p>
+        </div>
+
+        <div class="flex items-center justify-center space-x-6">
+             <button id="play-pause-btn" class="bg-white/10 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform focus:outline-none border-2 border-white/20">
+                <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-3 pt-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-200"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
+            <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.8" class="w-full">
+        </div>
+
+    </div>
+
+    <audio id="audio-player" preload="none"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const streamUrl = 'https://uk22freenew.listen2myradio.com/live.mp3?typeportmount=s1_36194_stream_217693800';
+
+            const audioPlayer = document.getElementById('audio-player');
+            audioPlayer.src = streamUrl;
+            
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const playIcon = document.getElementById('play-icon');
+            const pauseIcon = document.getElementById('pause-icon');
+            const volumeSlider = document.getElementById('volume-slider');
+            const statusText = document.getElementById('status');
+            const soundWaveContainer = document.getElementById('sound-wave-container');
+
+            let isPlaying = false;
+
+            function togglePlayPause() {
+                if (isPlaying) {
+                    audioPlayer.pause();
+                } else {
+                    statusText.textContent = "Conectando...";
+                    audioPlayer.play().catch(error => {
+                        console.error("Error al intentar reproducir:", error);
+                        statusText.textContent = "Error al conectar";
+                    });
+                }
+            }
+
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            
+            audioPlayer.addEventListener('playing', () => {
+                isPlaying = true;
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                statusText.textContent = "Transmitiendo en vivo...";
+                playPauseBtn.classList.remove('bg-white/10', 'border-white/20');
+                playPauseBtn.classList.add('bg-rose-500');
+                soundWaveContainer.classList.add('playing');
+            });
+
+            audioPlayer.addEventListener('pause', () => {
+                isPlaying = false;
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                statusText.textContent = "En Pausa";
+                playPauseBtn.classList.add('bg-white/10', 'border-white/20');
+                playPauseBtn.classList.remove('bg-rose-500');
+                soundWaveContainer.classList.remove('playing');
+            });
+
+            audioPlayer.addEventListener('waiting', () => {
+                statusText.textContent = "Cargando buffer...";
+            });
+
+            audioPlayer.addEventListener('error', () => {
+                isPlaying = false;
+                statusText.textContent = "Error de stream";
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                playPauseBtn.classList.add('bg-white/10', 'border-white/20');
+                playPauseBtn.classList.remove('bg-rose-500');
+                soundWaveContainer.classList.remove('playing');
+            });
+
+            volumeSlider.addEventListener('input', () => {
+                audioPlayer.volume = volumeSlider.value;
+            });
+            
+            audioPlayer.volume = volumeSlider.value;
+            
+            const playPromise = audioPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {}).catch(error => {
+                    console.warn("Autoplay bloqueado. Se requiere interacción del usuario.");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
